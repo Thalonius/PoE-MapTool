@@ -1,0 +1,96 @@
+CheckMapModifier()
+{
+	global MapInfo, BossInfo, MavenInfo, RecipeInfo, MapList, ToolTipDuration
+	if MapList =
+	{
+		MapDataFile := "Mapinfo.ini"
+		IniRead, MapList, %A_ScriptDir%\%MapDataFile%, General, MapList, %Null%
+		IniRead, ToolTipDuration, %A_ScriptDir%\%MapDataFile%, General, ToolTipDuration, 5000
+	}
+
+	Send ^c
+	Sleep,100
+	MapText := Clipboard
+	If !InStr(MapText, "Map Tier", 1, 30)
+	{
+		ToolTip, No Map
+		return
+	}
+
+	BossInfo =
+	Loop, Parse, MapText, `r, `n
+	{
+		if A_Index > 2
+		{
+			MapName := A_LoopField
+			RegExMatch(MapName, ".*(" MapList ").*", MapName)
+			ReadMapData(MapName)
+			if BossInfo <> 
+				Break
+		}
+	}
+
+	WarningText =
+	DamageCounter = 0
+	If InStr(MapText, "Nemesis") && InStr(MapText, "Beyond")
+		WarningText := WarningText "Nemesis & Beyond - Run juiced or sell"
+	If RegExMatch(MapText, "Monsters reflect.*of Elemental Damage")
+		WarningText := WarningText "!! Elemental Reflect !!`r"
+	If RegExMatch(MapText, "Monsters reflect.*of Physical Damage")
+		WarningText := WarningText "!! Physical Reflect !!`r"
+	If InStr(MapText, "Temporal Chains")
+		WarningText := WarningText "!! Temporal Chains !!`r"
+	If InStr(MapText, "Players Cannot Regenerate")
+		WarningText := WarningText "!! No Regen !!`r"
+	If InStr(MapText, "extra Physical Damage as Fire")
+		DamageCounter += 1
+	If InStr(MapText, "extra Physical Damage as Cold")
+		DamageCounter += 1
+	If InStr(MapText, "extra Physical Damage as Lightning")
+		DamageCounter += 1
+	If InStr(MapText, "Monster Critical Strike Multiplier")
+		DamageCounter += 1
+	If InStr(MapText, "increased Monster Damage")
+		DamageCounter += 0.5
+	If InStr(MapText, "fire 2 additional projectiles")
+		WarningText := WarningText "!! Additional Projectiles !!`r"
+	If InStr(MapText, "Increased Monster Attack Speed")
+		DamageCounter += 0.5
+	If InStr(MapText, "skills chain")
+		WarningText := WarningText "! Has Chain (dangerous for summoners)`r"
+	if DamageCounter > 2
+		WarningText := WarningText "!! Multi Damage Mods !!`r"
+
+	if BossInfo =
+	{
+		MapInfo = Unknown Map: %MapName%
+		BossInfo = ???
+		MavenInfo =
+		RecipeInfo =
+	}
+
+	MouseGetPos, MouseX
+
+	if WarningText <>
+		ToolTipText := WarningText
+	Else
+		ToolTipText := "GO! :-)"
+	ToolTipText := ToolTipText "`r`r" MapName "`rLayout:" A_Tab MapInfo "`rBoss: " A_Tab BossInfo
+	if MavenInfo <>
+		ToolTipText := ToolTipText "`rMaven: " A_Tab MavenInfo
+	if RecipeInfo <>
+		ToolTipText := ToolTipText "`rRecipes: " A_Tab RecipeInfo
+
+	ToolTip, %ToolTipText%, % MouseX + 60
+	SetTimer, ResetToolTip, -%ToolTipDuration%
+}
+
+ReadMapData(MapName)
+{
+	global MapInfo, BossInfo, MavenInfo, RecipeInfo
+	MapDataFile := "Mapinfo.ini"
+	IniRead, MapInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MapInfo, %Null%
+	IniRead, BossInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, BossInfo, %Null%
+	IniRead, MavenInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MavenInfo, %Null%
+	IniRead, RecipeInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, RecipeInfo, %Null%
+}
