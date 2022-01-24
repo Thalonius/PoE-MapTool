@@ -1,11 +1,15 @@
 CheckMapModifier()
 {
-	global MapInfo, BossInfo, MavenInfo, RecipeInfo, DivineVessel, MapList, ToolTipDuration
+	global MapInfo, BossInfo, MavenInfo, RecipeInfo, DivineVessel, MapList, ToolTipDuration, EnableMapInfo, EnableMavenInfo, EnableRecipeInfo, EnableDivineVesselInfo
 	if MapList =
 	{
 		MapDataFile := "Mapinfo.ini"
-		IniRead, MapList, %A_ScriptDir%\%MapDataFile%, General, MapList, %Null%
+		IniRead, MapList, %A_ScriptDir%\%MapDataFile%, General, MapList, 
 		IniRead, ToolTipDuration, %A_ScriptDir%\%MapDataFile%, General, ToolTipDuration, 5000
+		IniRead, EnableMapInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMapInfo, 
+		IniRead, EnableMavenInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMavenInfo, 
+		IniRead, EnableRecipeInfo, %A_ScriptDir%\%MapDataFile%, General, EnableRecipeInfo, 
+		IniRead, EnableDivineVesselInfo, %A_ScriptDir%\%MapDataFile%, General, EnableDivineVesselInfo, 
 	}
 
 	Send ^c
@@ -17,18 +21,21 @@ CheckMapModifier()
 		return
 	}
 
-	BossInfo =
-	Loop, Parse, MapText, `r, `n
+	if EnableMapInfo
 	{
-		if A_Index > 2
+		BossInfo =
+		Loop, Parse, MapText, `r, `n
 		{
-			MapName := A_LoopField
-			RegExMatch(MapName, "U).*(" MapList ").*", MapName)
-			ReadMapData(MapName)
-			if BossInfo = ERROR
-				BossInfo := ""
-			if BossInfo <> 
-				Break
+			if A_Index > 2
+			{
+				MapName := A_LoopField
+				RegExMatch(MapName, "U).*(" MapList ").*", MapName)
+				ReadMapData(MapName)
+				if BossInfo = ERROR
+					BossInfo := ""
+				if BossInfo <> 
+					Break
+			}
 		}
 	}
 
@@ -63,28 +70,31 @@ CheckMapModifier()
 	if DamageCounter > 2
 		WarningText := WarningText "!! Multi Damage Mods !!`r"
 
-	if BossInfo =
-	{
-		MapInfo = Unknown Map: %MapName%
-		BossInfo = ???
-		MavenInfo =
-		RecipeInfo =
-		DivineVessel = 
-	}
-
 	MouseGetPos, MouseX
 
 	if WarningText <>
 		ToolTipText := WarningText
 	Else
 		ToolTipText := "GO! :-)"
-	ToolTipText := ToolTipText "`r`r" MapName "`rLayout:" A_Tab A_Tab MapInfo "`rBoss: " A_Tab A_Tab BossInfo
-	if MavenInfo <>
-		ToolTipText := ToolTipText "`rMaven: " A_Tab A_Tab MavenInfo
-	if RecipeInfo <>
-		ToolTipText := ToolTipText "`rRecipes: " A_Tab A_Tab RecipeInfo
-	if DivineVessel <>
-		ToolTipText := ToolTipText "`rDivine Vessel: " A_Tab DivineVessel
+
+	if EnableMapInfo
+	{
+		if BossInfo =
+		{
+			MapInfo = Unknown Map: %MapName%
+			BossInfo = ???
+			MavenInfo =
+			RecipeInfo =
+			DivineVessel = 
+		}
+		ToolTipText := ToolTipText "`r`r" MapName "`rLayout:" A_Tab A_Tab MapInfo "`rBoss: " A_Tab A_Tab BossInfo
+		if (MavenInfo <> "" ) and (EnableMavenInfo)
+			ToolTipText := ToolTipText "`rMaven: " A_Tab A_Tab MavenInfo
+		if (RecipeInfo <> "") and (EnableRecipeInfo)
+			ToolTipText := ToolTipText "`rRecipes: " A_Tab A_Tab RecipeInfo
+		if (DivineVessel <> "") and (EnableDivineVesselInfo)
+			ToolTipText := ToolTipText "`rDivine Vessel: " A_Tab DivineVessel
+	}
 	ToolTip, %ToolTipText%, % MouseX + 60
 	SetTimer, ResetToolTip, -%ToolTipDuration%
 }
@@ -97,5 +107,5 @@ ReadMapData(MapName)
 	IniRead, BossInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, BossInfo, 
 	IniRead, MavenInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MavenInfo, 
 	IniRead, RecipeInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, RecipeInfo, 
-	IniRead, DivineVessel, %A_ScriptDir%\%MapDataFile%, %MapName%, DivineVessel, 	
+	IniRead, DivineVessel, %A_ScriptDir%\%MapDataFile%, %MapName%, DivineVessel, 
 }
