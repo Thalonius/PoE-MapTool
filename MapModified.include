@@ -1,6 +1,6 @@
 CheckMapModifier()
 {
-	global MapInfo, BossInfo, MavenInfo, RecipeInfo, MapList, ToolTipDuration
+	global MapInfo, BossInfo, MavenInfo, RecipeInfo, DivineVessel, MapList, ToolTipDuration
 	if MapList =
 	{
 		MapDataFile := "Mapinfo.ini"
@@ -23,8 +23,10 @@ CheckMapModifier()
 		if A_Index > 2
 		{
 			MapName := A_LoopField
-			RegExMatch(MapName, ".*(" MapList ").*", MapName)
+			RegExMatch(MapName, "U).*(" MapList ").*", MapName)
 			ReadMapData(MapName)
+			if BossInfo = ERROR
+				BossInfo := ""
 			if BossInfo <> 
 				Break
 		}
@@ -67,6 +69,7 @@ CheckMapModifier()
 		BossInfo = ???
 		MavenInfo =
 		RecipeInfo =
+		DivineVessel = 
 	}
 
 	MouseGetPos, MouseX
@@ -75,22 +78,24 @@ CheckMapModifier()
 		ToolTipText := WarningText
 	Else
 		ToolTipText := "GO! :-)"
-	ToolTipText := ToolTipText "`r`r" MapName "`rLayout:" A_Tab MapInfo "`rBoss: " A_Tab BossInfo
+	ToolTipText := ToolTipText "`r`r" MapName "`rLayout:" A_Tab A_Tab MapInfo "`rBoss: " A_Tab A_Tab BossInfo
 	if MavenInfo <>
-		ToolTipText := ToolTipText "`rMaven: " A_Tab MavenInfo
+		ToolTipText := ToolTipText "`rMaven: " A_Tab A_Tab MavenInfo
 	if RecipeInfo <>
-		ToolTipText := ToolTipText "`rRecipes: " A_Tab RecipeInfo
-
+		ToolTipText := ToolTipText "`rRecipes: " A_Tab A_Tab RecipeInfo
+	if DivineVessel <>
+		ToolTipText := ToolTipText "`rDivine Vessel: " A_Tab DivineVessel
 	ToolTip, %ToolTipText%, % MouseX + 60
 	SetTimer, ResetToolTip, -%ToolTipDuration%
 }
 
 ReadMapData(MapName)
 {
-	global MapInfo, BossInfo, MavenInfo, RecipeInfo
+	global MapInfo, BossInfo, MavenInfo, RecipeInfo, DivineVessel
 	MapDataFile := "Mapinfo.ini"
-	IniRead, MapInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MapInfo, %Null%
-	IniRead, BossInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, BossInfo, %Null%
-	IniRead, MavenInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MavenInfo, %Null%
-	IniRead, RecipeInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, RecipeInfo, %Null%
+	IniRead, MapInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MapInfo, 
+	IniRead, BossInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, BossInfo, 
+	IniRead, MavenInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MavenInfo, 
+	IniRead, RecipeInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, RecipeInfo, 
+	IniRead, DivineVessel, %A_ScriptDir%\%MapDataFile%, %MapName%, DivineVessel, 	
 }
