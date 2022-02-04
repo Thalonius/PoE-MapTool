@@ -4,13 +4,23 @@ CheckMapModifier()
 	if MapList =
 	{
 		MapDataFile := "Mapinfo.ini"
-		IniRead, MapList, %A_ScriptDir%\%MapDataFile%, General, MapList, 
+		FileRead, MapDataFileContent, %A_ScriptDir%\%MapDataFile%
+		MapDataFileContent := SubStr(MapDataFileContent,100)
+
+		Loop, Parse, MapDataFileContent, `r, `n
+		{
+			if not InStr(A_LoopField, "[")
+				Continue
+			MapName := Trim(A_LoopField, " `t[]")
+			MapList := MapList MapName "|"
+		}
+		StringTrimRight, MapList, MapList, 1
 		IniRead, ToolTipDuration, %A_ScriptDir%\%MapDataFile%, General, ToolTipDuration, 5000
 		IniRead, EnableMapInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMapInfo, 
 		IniRead, EnableMavenInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMavenInfo, 
 		IniRead, EnableRecipeInfo, %A_ScriptDir%\%MapDataFile%, General, EnableRecipeInfo, 
 		IniRead, EnableDivineVesselInfo, %A_ScriptDir%\%MapDataFile%, General, EnableDivineVesselInfo, 
-	}
+	}	
 
 	Send ^c
 	Sleep,100
