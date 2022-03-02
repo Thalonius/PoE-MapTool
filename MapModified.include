@@ -71,12 +71,16 @@ CheckMapModifier()
 		DamageCounter += 1
 	If InStr(MapText, "increased Monster Damage")
 		DamageCounter += 0.5
+	If InStr(MapText, "increased Accuracy Rating")
+		DamageCounter += 0.5
 	If InStr(MapText, "fire 2 additional projectiles")
 		WarningText := WarningText "!! Additional Projectiles !!`r"
 	If InStr(MapText, "Increased Monster Attack Speed")
 		DamageCounter += 0.5
 	If InStr(MapText, "skills chain")
 		WarningText := WarningText "! Has Chain (dangerous for summoners)`r"
+	If InStr(MapText, "Avoid Elemental Ailments")
+		WarningText := WarningText "! Avoid Elemental Ailments`r"
 	if DamageCounter > 2
 		WarningText := WarningText "!! Multi Damage Mods !!`r"
 
