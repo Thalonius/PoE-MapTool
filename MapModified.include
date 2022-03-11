@@ -81,6 +81,8 @@ CheckMapModifier()
 		WarningText := WarningText "! Has Chain (dangerous for summoners)`r"
 	If InStr(MapText, "Avoid Elemental Ailments")
 		WarningText := WarningText "! Avoid Elemental Ailments`r"
+	If InStr(MapText, "Patches of Desecrated Ground")
+		WarningText := WarningText "! Desecrated Ground !`r"
 	if DamageCounter > 2
 		WarningText := WarningText "!! Multi Damage Mods !!`r"
 
