@@ -34,33 +34,64 @@ CheckMapModifier()
 	if EnableMapInfo
 	{
 		BossInfo =
+		Rarity =
 		Loop, Parse, MapText, `r, `n
 		{
-			if A_Index > 2
+			if A_Index = 2
 			{
-				MapName := A_LoopField
-				RegExMatch(MapName, "U).*(" MapList ").*", MapName)
-				ReadMapData(MapName)
-				if BossInfo = ERROR
-					BossInfo := ""
-				if BossInfo <> 
-					Break
+				if InStr(A_LoopField,"Rarity")
+					Rarity := SubStr(A_LoopField,9)
+			}
+			else if A_Index > 2
+			{
+				MapName := A_LoopField								
+				if RegExMatch(MapName, "U).*(" MapList ").*", MapName) > 0
+				{
+					if (Rarity = "Magic")
+					{
+						MapNameTemp := SubStr(MapName,InStr(MapName,A_Space))
+						if RegExMatch(MapNameTemp, "U).*(" MapList ").*", MapNameTemp) > 0
+							MapName := MapNameTemp
+					}
+
+					ReadMapData(MapName)
+					if BossInfo = ERROR
+						BossInfo := ""
+					if BossInfo <> 
+						Break
+				}
 			}
 		}
 	}
 
 	WarningText =
 	DamageCounter = 0
-	If InStr(MapText, "Nemesis") && InStr(MapText, "Beyond")
-		WarningText := WarningText "Nemesis & Beyond - Run juiced or sell"
+;	If InStr(MapText, "Nemesis") && InStr(MapText, "Beyond")
+;		WarningText := WarningText "Nemesis & Beyond - Run juiced or sell"
+	;DANGEROUS MODS
 	If RegExMatch(MapText, "Monsters reflect.*of Elemental Damage")
 		WarningText := WarningText "!! Elemental Reflect !!`r"
 	If RegExMatch(MapText, "Monsters reflect.*of Physical Damage")
 		WarningText := WarningText "!! Physical Reflect !!`r"
+	If RegExMatch(MapText, "% maximum Player Resistances")
+		WarningText := WarningText "!! Minus Max Resists !!`r"		
+	If RegExMatch(MapText, "Cannot Leech from Monsters")
+		WarningText := WarningText "!! No leech !!`r"
 	If InStr(MapText, "Temporal Chains")
 		WarningText := WarningText "!! Temporal Chains !!`r"
 	If InStr(MapText, "Players Cannot Regenerate")
 		WarningText := WarningText "!! No Regen !!`r"
+
+	;MOD WARNINGS
+	If InStr(MapText, "skills chain")
+		WarningText := WarningText "! Has Chain (dangerous for summoners)`r"
+	If InStr(MapText, "Avoid Elemental Ailments")
+		WarningText := WarningText "! Avoid Elemental Ailments`r"
+	If InStr(MapText, "Patches of Desecrated Ground")
+		WarningText := WarningText "! Desecrated Ground !`r"
+	If InStr(MapText, "Elemental Weakness")
+		WarningText := WarningText "! Elemental Weakness (-20% Ele Res) !`r"
+
 	If InStr(MapText, "extra Physical Damage as Fire")
 		DamageCounter += 1
 	If InStr(MapText, "extra Physical Damage as Cold")
@@ -77,12 +108,6 @@ CheckMapModifier()
 		WarningText := WarningText "!! Additional Projectiles !!`r"
 	If InStr(MapText, "Increased Monster Attack Speed")
 		DamageCounter += 0.5
-	If InStr(MapText, "skills chain")
-		WarningText := WarningText "! Has Chain (dangerous for summoners)`r"
-	If InStr(MapText, "Avoid Elemental Ailments")
-		WarningText := WarningText "! Avoid Elemental Ailments`r"
-	If InStr(MapText, "Patches of Desecrated Ground")
-		WarningText := WarningText "! Desecrated Ground !`r"
 	if DamageCounter > 2
 		WarningText := WarningText "!! Multi Damage Mods !!`r"
 
