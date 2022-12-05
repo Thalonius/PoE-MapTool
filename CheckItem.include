@@ -1,4 +1,4 @@
-CheckItem()
+CheckItem(ResetToolTip)
 {
 	global ItemInfo, ItemClass, ClipboardBackup
 	MouseGetPos, MouseX
@@ -40,4 +40,11 @@ CheckItem()
 				Break
 			}
 		}
+		
+	If ResetToolTip
+		SetTimer, ResetItemToolTip, -3000
 }
+
+ResetItemToolTip:
+ToolTip
+Return

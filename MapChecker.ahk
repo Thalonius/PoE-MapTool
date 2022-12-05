@@ -15,7 +15,7 @@ if ErrorLevel = 0
 	if (ItemClass = "Maps")
 		CheckMapModifier()
 	Else
-		CheckItem()
+		CheckItem(True)
 }
 Clipboard := ClipboardBackup
 Return
