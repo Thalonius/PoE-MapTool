@@ -1,0 +1,43 @@
+CheckItem()
+{
+	global ItemInfo, ItemClass, ClipboardBackup
+	MouseGetPos, MouseX
+	if (ItemInfo = ClipboardBackup)
+		ToolTip, Identical to Trade!, % MouseX + 60
+	Else If (ItemInfo = SubStr(ClipboardBackup,1,StrLen(ItemInfo)))
+		ToolTip, Identical to Trade!, % MouseX + 60
+	Else
+		Loop, Parse, ItemInfo, `r, `n
+		{
+			;Check socket count
+			if InStr(A_LoopField, "Sockets:")
+			{
+				Count := 0
+				MaxCount := 0
+				Loop, Parse, % SubStr(A_LoopField,9), GRBW
+				{
+					if (A_LoopField = " ")
+					{
+						if (Count > MaxCount)
+							MaxCount := Count
+						Count = 0
+					}
+					Else
+						Count += 1
+				}
+
+				if MaxCount > 0
+					MaxCount += 1
+				if ItemClass in Body Armours,Bows,Two Hand Axes,Two Hand Swords,Warstaves,Staves
+				{
+					if MaxCount = 6
+						ToolTip, % "PERFECT! 6L!", % MouseX + 60
+					Else
+						ToolTip, % "Item has only " MaxCount " links!", % MouseX + 60
+				}
+				Else
+					ToolTip, % "Item has " MaxCount " links!", % MouseX + 60
+				Break
+			}
+		}
+}

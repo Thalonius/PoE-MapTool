@@ -22,8 +22,6 @@ CheckMapModifier()
 		IniRead, EnableDivineVesselInfo, %A_ScriptDir%\%MapDataFile%, General, EnableDivineVesselInfo, 
 	}	
 
-	Send ^c
-	Sleep,100
 	MapText := Clipboard
 	If !InStr(MapText, "Map Tier", 1, 30)
 	{
