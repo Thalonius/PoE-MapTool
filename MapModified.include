@@ -42,7 +42,8 @@ CheckMapModifier()
 			}
 			else if A_Index > 2
 			{
-				MapName := A_LoopField								
+				MapName := A_LoopField
+				MapName := StrReplace(MapName, "Superior" A_Space)
 				if RegExMatch(MapName, "U).*(" MapList ").*", MapName) > 0
 				{
 					if (Rarity = "Magic")
