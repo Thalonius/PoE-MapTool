@@ -9,7 +9,7 @@ TierList := Clipboard
 
 if SubStr(TierList, 1, 6) != "Tier 1"
 {
-    MsgBox, Please copy the Tier List into Clipboard
+    MsgBox, Please copy the Tier List into Clipboard and start again!
     ExitApp
 }
 
@@ -21,7 +21,7 @@ NewMapInfo := ""
 SkipTierReplacement := False
 Loop, Parse, MapInfo, `r, `n
 {
-    if A_LoopField = [Forge of the Phoenix]
+    if A_LoopField = [Forge of the Phoenix Map]
         SkipTierReplacement := True
 
     if (SkipTierReplacement = False) AND (InStr(A_LoopField, "Tier", 1) > 0)
