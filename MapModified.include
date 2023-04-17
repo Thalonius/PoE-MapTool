@@ -44,6 +44,7 @@ CheckMapModifier()
 			{
 				MapName := A_LoopField
 				MapName := StrReplace(MapName, "Superior" A_Space)
+				MapName := StrReplace(MapName, "Blighted" A_Space)
 				if RegExMatch(MapName, "U).*(" MapList ").*", MapName) > 0
 				{
 					if (Rarity = "Magic")
