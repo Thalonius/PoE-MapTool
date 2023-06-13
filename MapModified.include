@@ -107,6 +107,8 @@ CheckMapModifier()
 	If InStr(MapText, "fire 2 additional projectiles")
 		WarningText := WarningText "!! Additional Projectiles !!`r"
 	If InStr(MapText, "Increased Monster Attack Speed")
+		DamageCounter += 0.7
+	If InStr(MapText, "chance to Impale with Attacks")
 		DamageCounter += 0.5
 	if DamageCounter > 2
 		WarningText := WarningText "!! Multi Damage Mods !!`r"
