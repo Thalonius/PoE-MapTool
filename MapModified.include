@@ -1,26 +1,32 @@
+InitMapList()
+{
+	global MapList, ToolTipDuration, EnableMapInfo, EnableMavenInfo, EnableRecipeInfo, EnableDivineVesselInfo
+	if MapList <>
+		Return
+	MapDataFile := "Mapinfo.ini"
+	FileRead, MapDataFileContent, %A_ScriptDir%\%MapDataFile%
+	MapDataFileContent := SubStr(MapDataFileContent,100)
+
+	Loop, Parse, MapDataFileContent, `r, `n
+	{
+		if not InStr(A_LoopField, "[")
+			Continue
+		MapName := Trim(A_LoopField, " `t[]")
+		MapList := MapList MapName "|"
+	}
+	StringTrimRight, MapList, MapList, 1
+	IniRead, ToolTipDuration, %A_ScriptDir%\%MapDataFile%, General, ToolTipDuration, 5000
+	IniRead, EnableMapInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMapInfo, 
+	IniRead, EnableMavenInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMavenInfo, 
+	;IniRead, EnableRecipeInfo, %A_ScriptDir%\%MapDataFile%, General, EnableRecipeInfo, 
+	EnableRecipeInfo := False
+	IniRead, EnableDivineVesselInfo, %A_ScriptDir%\%MapDataFile%, General, EnableDivineVesselInfo, 
+}
+
 CheckMapModifier()
 {
 	global MapInfo, BossInfo, MavenInfo, RecipeInfo, DivineVessel, MapList, ToolTipDuration, EnableMapInfo, EnableMavenInfo, EnableRecipeInfo, EnableDivineVesselInfo
-	if MapList =
-	{
-		MapDataFile := "Mapinfo.ini"
-		FileRead, MapDataFileContent, %A_ScriptDir%\%MapDataFile%
-		MapDataFileContent := SubStr(MapDataFileContent,100)
-
-		Loop, Parse, MapDataFileContent, `r, `n
-		{
-			if not InStr(A_LoopField, "[")
-				Continue
-			MapName := Trim(A_LoopField, " `t[]")
-			MapList := MapList MapName "|"
-		}
-		StringTrimRight, MapList, MapList, 1
-		IniRead, ToolTipDuration, %A_ScriptDir%\%MapDataFile%, General, ToolTipDuration, 5000
-		IniRead, EnableMapInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMapInfo, 
-		IniRead, EnableMavenInfo, %A_ScriptDir%\%MapDataFile%, General, EnableMavenInfo, 
-		IniRead, EnableRecipeInfo, %A_ScriptDir%\%MapDataFile%, General, EnableRecipeInfo, 
-		IniRead, EnableDivineVesselInfo, %A_ScriptDir%\%MapDataFile%, General, EnableDivineVesselInfo, 
-	}	
+	InitMapList()
 
 	MapText := Clipboard
 	If !InStr(MapText, "Map Tier", 1, 30)
@@ -144,11 +150,26 @@ CheckMapModifier()
 
 ReadMapData(MapName)
 {
-	global MapInfo, BossInfo, MavenInfo, RecipeInfo, DivineVessel
+	global MapInfo, BossInfo, MavenInfo, RecipeInfo, DivineVessel, MapTier
 	MapDataFile := "Mapinfo.ini"
 	IniRead, MapInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MapInfo, 
+	if (MapInfo = "ERROR")
+		MapInfo := ""
 	IniRead, BossInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, BossInfo, 
+	if (BossInfo = "ERROR")
+		BossInfo := ""
 	IniRead, MavenInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, MavenInfo, 
+	if (MavenInfo = "ERROR")
+		MavenInfo := ""
 	IniRead, RecipeInfo, %A_ScriptDir%\%MapDataFile%, %MapName%, RecipeInfo, 
+	if (RecipeInfo = "ERROR")
+		RecipeInfo := ""
 	IniRead, DivineVessel, %A_ScriptDir%\%MapDataFile%, %MapName%, DivineVessel, 
+	if (DivineVessel = "ERROR")
+		DivineVessel := ""
+	IniRead, MapTier, %A_ScriptDir%\%MapDataFile%, %MapName%, Tier, 
+	if (MapTier = "")
+		MapTier := "Not in current Atlas"
+	else if (MapTier = "ERROR")
+		MapTier := ""
 }
